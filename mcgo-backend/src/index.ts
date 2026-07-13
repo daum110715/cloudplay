@@ -39,25 +39,21 @@ app.post('/api/token', async (c) => {
     const hostname = `${roomId}.cloudplay.lat`;
     const { ACCOUNT_ID, TUNNEL_ID, CLOUDFLARE_API_TOKEN } = c.env;
 
-    // 2. Call Cloudflare API to generate tunnel token
+    // 2. Call Cloudflare API to get tunnel token
     const resp = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/tokens`,
+      `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/cfd_tunnel/${TUNNEL_ID}/token`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${CLOUDFLARE_API_TOKEN}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          hostname: hostname,
-          ttl: 3600, // 1 hour validity
-        })
       }
     );
 
     const data = await resp.json() as any;
 
-    if (!data.success) {
+    if (!resp.ok || !data.success) {
       console.error('Cloudflare API error:', JSON.stringify(data.errors));
       return c.json({
         success: false,
@@ -70,7 +66,7 @@ app.post('/api/token', async (c) => {
       success: true,
       data: {
         hostname: hostname,
-        token: data.result.token,
+        token: data.result,
         expiresIn: 3600,
       }
     });

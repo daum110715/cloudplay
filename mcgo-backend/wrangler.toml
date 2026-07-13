@@ -10,7 +10,7 @@ id = "ce88764dde894e019470b154c30460bf"
 # Environment variables
 [vars]
 ACCOUNT_ID = "e82cfd2caf59231ca62061a3454df254"
-TUNNEL_ID = "your_tunnel_uuid"
+TUNNEL_ID = "6460e148-4973-4ad4-a0fc-e766b8a7b2da"
 
 # Sensitive variables - inject via: wrangler secret put CLOUDFLARE_API_TOKEN
 # CLOUDFLARE_API_TOKEN = "your_api_token"
