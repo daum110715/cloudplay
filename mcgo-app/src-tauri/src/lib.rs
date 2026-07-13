@@ -21,6 +21,22 @@ pub fn run() {
 
     tauri::Builder::default()
         .manage(state)
+        .setup(|app| {
+            // Force Cloudflare brand icon onto the window (taskbar) immediately
+            use tauri::Manager;
+            if let Some(win) = app.get_webview_window("main") {
+                const ICON_PNG: &[u8] = include_bytes!("../icons/icon-256.png");
+                match tauri::image::Image::from_bytes(ICON_PNG) {
+                    Ok(icon) => {
+                        if let Err(e) = win.set_icon(icon) {
+                            log::warn!("set_icon failed: {e}");
+                        }
+                    }
+                    Err(e) => log::warn!("icon decode failed: {e}"),
+                }
+            }
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             commands::tunnel::start_tunnel,
             commands::tunnel::stop_tunnel,

@@ -1,4 +1,5 @@
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { applyWindowIcon } from '../lib/appIcon';
 
 export type Theme = 'dark' | 'light';
 
@@ -30,6 +31,7 @@ function setGlobalTheme(theme: Theme) {
   apply(theme);
   localStorage.setItem(KEY, theme);
   listeners.forEach((l) => l());
+  void applyWindowIcon(theme);
 }
 
 function subscribe(listener: () => void) {
@@ -48,6 +50,8 @@ export function bootstrapTheme() {
   const t = readTheme();
   current = t;
   apply(t);
+  // Taskbar icon ASAP (exe default may be stale until this runs)
+  void applyWindowIcon(t);
 }
 
 export function useTheme() {
@@ -56,6 +60,11 @@ export function useTheme() {
     getSnapshot,
     () => 'dark' as Theme,
   );
+
+  // Apply matching taskbar icon once Tauri + assets are ready
+  useEffect(() => {
+    void applyWindowIcon(theme);
+  }, [theme]);
 
   const toggle = useCallback(() => {
     setGlobalTheme(theme === 'dark' ? 'light' : 'dark');

@@ -1,8 +1,7 @@
 import { lazy, Suspense, useMemo } from 'react';
 import { useAppStore } from './store';
-import { TitleBar } from './components/TitleBar';
 import { Sidebar } from './components/Sidebar';
-import { StatusBar } from './components/StatusBar';
+import { WindowControls } from './components/WindowControls';
 
 const HostPage = lazy(() =>
   import('./pages/HostPage').then((m) => ({ default: m.HostPage })),
@@ -32,12 +31,11 @@ export default function App() {
 
   return (
     <div className="shell">
-      <TitleBar />
+      <WindowControls />
       <Sidebar />
       <main className="shell__main">
         <Suspense fallback={<Fallback />}>{page}</Suspense>
       </main>
-      <StatusBar />
     </div>
   );
 }
